@@ -82,4 +82,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\Board.cs" />
-    <Compile Inclu
+    <Compile Include="Model\BobsTavern.cs" />
+    <Compile Include="Model\Simulation.cs" />
+    <Compile Include="Model\ITavern.cs" />
+    <Compile Include="Model\MinionBase.cs" />
+    <Compile Include="Model\MinionTier.cs" />
+    <Compile Include="Model\Player.cs" />
+    <Compile Include="Model\Pool.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</Depende
