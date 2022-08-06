@@ -44,4 +44,23 @@
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xaml">
-      <RequiredTargetFra
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Model\Battle.cs" />
+    <Compile Include="Model\BrainBase.cs" />
+    <Compile Include="Model\Buff.cs" />
+    <Compile Include="Model\CardBase.cs" />
+    <Compile Include="Model\Enums.cs" />
+    <Compile Include="Model\IBrain.cs" />
+    <Compile Include="Model\ICard.cs" />
+    <Compile Include="Model\IMinion.cs" />
+    <Compile Incl
