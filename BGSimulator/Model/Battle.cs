@@ -28,4 +28,21 @@ namespace BGSimulator.Model
             attackerBoard.HookEvents();
             defenderBoard.HookEvents();
 
-            attackerBoard.ApplyA
+            attackerBoard.ApplyAuras();
+            defenderBoard.ApplyAuras();
+
+            while (!attackerBoard.IsEmpty && !defenderBoard.IsEmpty)
+            {
+                PrintBoardState(attackerBoard, defenderBoard);
+
+                attackerBoard.Attack(defenderBoard);
+
+                var temp = attackerBoard;
+                attackerBoard = defenderBoard;
+                defenderBoard = temp;
+            }
+
+            int attackerDamage = attackerBoard.PlayedMinions.Select(m => m.MinionTier.Tier).Sum();
+            int defenderDamage = defenderBoard.PlayedMinions.Select(m => m.MinionTier.Tier).Sum();
+            attackerBoard.Player.TakeDamage(defenderDamage, always: true);
+            defenderBoard.Player.TakeDamage(attackerDamage, alwa
