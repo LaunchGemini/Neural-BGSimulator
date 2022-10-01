@@ -45,4 +45,22 @@ namespace BGSimulator.Model
             int attackerDamage = attackerBoard.PlayedMinions.Select(m => m.MinionTier.Tier).Sum();
             int defenderDamage = defenderBoard.PlayedMinions.Select(m => m.MinionTier.Tier).Sum();
             attackerBoard.Player.TakeDamage(defenderDamage, always: true);
-            defenderBoard.Player.TakeDamage(attackerDamage, alwa
+            defenderBoard.Player.TakeDamage(attackerDamage, always: true);
+            
+        }
+
+        private static void PrintBoardState(Board attackerBoard, Board defenderBoard)
+        {
+            Console.WriteLine();
+            Console.WriteLine("{0} Board", attackerBoard.Player);
+            Console.WriteLine(string.Format(string.Join((" | "), attackerBoard.PlayedMinions)));
+            Console.WriteLine("{0} Board", defenderBoard.Player);
+            Console.WriteLine(string.Format(string.Join((" | "), defenderBoard.PlayedMinions)));
+            Console.WriteLine();
+        }
+
+        private Player FirstAttacker()
+        {
+            if (PlayerABoard.PlayedMinions.Count > PlayerBBoard.PlayedMinions.Count)
+            {
+   
