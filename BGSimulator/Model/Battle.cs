@@ -63,4 +63,21 @@ namespace BGSimulator.Model
         {
             if (PlayerABoard.PlayedMinions.Count > PlayerBBoard.PlayedMinions.Count)
             {
-   
+                return PlayerA;
+            }
+            else if (PlayerABoard.PlayedMinions.Count < PlayerBBoard.PlayedMinions.Count)
+            {
+                return PlayerB;
+            }
+            else
+            {
+                return FlipCoin();
+            }
+        }
+
+        private Player FlipCoin()
+        {
+            return RandomNumber(0, 100) < 50 ? PlayerA : PlayerB;
+        }
+    }
+}
