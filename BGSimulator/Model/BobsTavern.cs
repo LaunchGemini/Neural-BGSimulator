@@ -17,4 +17,32 @@ namespace BGSimulator.Model
             Pool.Return(player.ShopOffer);
         }
 
-        pu
+        public void Roll(Player player, bool free = false)
+        {
+            if ((!free && player.Gold == 0))
+                return;
+
+            if(player.Freeze)
+            {
+                player.Freeze = false;
+                return;
+            }
+
+                if (!free)
+                player.Gold--;
+
+
+            player.ShopOffer = Pool.Roll(AmountToDeal(player.ShopLevel), player.ShopLevel);
+        }
+
+        public void Sell(IMinion minion)
+        {
+            Pool.Return(minion);
+        }
+
+        private int AmountToDeal(int level)
+        {
+            return (level / 2) + 3;
+        }
+    }
+}
