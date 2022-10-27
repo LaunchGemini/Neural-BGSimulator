@@ -304,3 +304,267 @@ namespace BGSimulator.Model
             ClearDeaths();
             RivalBoard.ClearDeaths();
         }
+
+        public (bool tookDamage, bool lostDivine, bool overkill, bool killed) MinionTakeDamage(IMinion minion, int damage)
+        {
+            var damageResult = minion.TakeDamage(damage);
+            if (damageResult.tookDamage)
+            {
+                minion.OnDamage(new TriggerParams() { Activator = minion, Board = this, Damage = damage });
+                OnMinionTookDamage(minion);
+            }
+
+            if (damageResult.lostDivine)
+            {
+                OnMinionLostDivineShield(minion);
+            }
+
+            return damageResult;
+        }
+
+        public IMinion RemoveSmallestMinion()
+        {
+            var minion = PlayedMinions.OrderBy(m => m.Health).ThenBy(m => m.Attack).First();
+            Remove(minion);
+            return minion;
+        }
+
+        public void ShootRandomMinion(int damage, int repeat = 1)
+        {
+            for (int i = 0; i < repeat; i++)
+            {
+                var minion = RivalBoard.GetRandomMinion();
+                if (minion != null)
+                {
+                    RivalBoard.MinionTakeDamage(minion, damage);
+                }
+            }
+        }
+
+        public void Play(IMinion minion, int index = 0, IMinion target = null)
+        {
+            OnMinionSummon(minion, index);
+            minion.OnApplyAura(new TriggerParams() { Activator = minion, Index = index, Board = this, Player = Player });
+            int auraLevel = BoardAuras.Where(a => a.Value == AuraType.BattleCry).Select(b => b.Key.Level).DefaultIfEmpty().Max() + 1;
+            PlayedMinions.Insert(index, minion);
+            for (int j = 0; j < auraLevel; j++)
+            {
+                minion.OnPlayed(new TriggerParams() { Activator = minion, Index = index, Target = target, Board = this, Player = Player });
+            }
+        }
+
+        public void Remove(IMinion minion)
+        {
+            RemoveAuras(minion);
+            PlayedMinions.Remove(minion);
+        }
+
+        public void RoundEnd()
+        {
+            for (int i = 0; i < PlayedMinions.Count; i++)
+            {
+                var minion = PlayedMinions[i];
+
+                for (int j = 0; j < minion.Level; j++)
+                {
+                    minion.OnTurnEnd(new TriggerParams() { Activator = minion, Index = i, Board = this, Player = Player });
+                }
+            }
+        }
+
+        public void RoundStart()
+        {
+            for (int i = 0; i < PlayedMinions.Count; i++)
+            {
+                var minion = PlayedMinions[i];
+
+                for (int j = 0; j < minion.Level; j++)
+                {
+                    minion.OnTurnStart(new TriggerParams() { Activator = minion, Index = i, Board = this, Player = Player });
+                }
+            }
+        }
+
+        private Dictionary<IMinion, int> SummonAura = new Dictionary<IMinion, int>();
+
+        public void Summon(string minionName, int index, Direction direction = Direction.Right, int amount = 1, bool golden = false)
+        {
+            for (int i = 0; i < amount; i++)
+            {
+                if (IsFull)
+                {
+                    return;
+                }
+
+                var summoned = Pool.Instance.GetFreshCopy(minionName);
+                PlayedMinions.Insert(index + (int)direction, summoned);
+                OnMinionSummon(summoned, index);
+
+                ActivateSummonAura(index, direction, summoned);
+            }
+        }
+
+        private void ActivateSummonAura(int index, Direction direction, IMinion summoned)
+        {
+            int auraLevel = BoardAuras.Where(a => a.Value == AuraType.Summon).Select(b => b.Key.Level).DefaultIfEmpty().Max();
+            for (int j = 0; j < auraLevel; j++)
+            {
+                if (IsFull)
+                    break;
+                var copy = summoned.Clone();
+                PlayedMinions.Insert(index + (int)direction, copy);
+            }
+        }
+
+        public void Summon(List<IMinion> minions, int index, Direction direction, bool golden = false)
+        {
+            foreach (var minion in minions)
+            {
+                Summon(minion.Name, index, direction, golden: golden);
+            }
+        }
+
+        public void SummonFromGraveyard(MinionType type, int index, Direction direction = Direction.InPlace, int amount = 1)
+        {
+            var revive = Graveyard.Where(m => m.MinionType == type).Take(amount);
+            foreach (var minion in revive)
+            {
+                Summon(minion.Name, index, direction);
+            }
+        }
+
+        public void TryMagnet(IMinion magnetic, int index)
+        {
+            if (index++ > PlayedMinions.Count)
+                return;
+
+            var minion = PlayedMinions[index];
+            if ((magnetic.ValidTargets & minion.MinionType) != 0)
+            {
+                minion.Attack += magnetic.Attack;
+                minion.Health += magnetic.Health;
+                minion.Attributes |= magnetic.Attributes;
+                Remove(magnetic);
+                Pool.Instance.Return(magnetic);
+            }
+        }
+
+        private void ClearDeaths()
+        {
+            Dictionary<IMinion, int> deaths = new Dictionary<IMinion, int>();
+
+            for (int i = 0; i < PlayedMinions.Count; i++)
+            {
+                var minion = PlayedMinions[i];
+                if (minion.IsDead)
+                {
+                    deaths[minion] = i;
+                    int index = PlayedMinions.IndexOf(minion);
+                    Remove(minion);
+                    Graveyard.Add(minion);
+                }
+            }
+
+            foreach (var kv in deaths)
+            {
+                int auraLevel = BoardAuras.Where(a => a.Value == AuraType.Deathrattle).Select(b => b.Key.Level).DefaultIfEmpty().Max() + 1;
+                for (int i = 0; i < auraLevel; i++)
+                {
+                    kv.Key.OnDeath(new TriggerParams() { Activator = kv.Key, Board = this, RivalBoard = RivalBoard, Index = kv.Value });
+                }
+
+                OnMinionDied(kv.Key);
+            }
+        }
+
+        private List<IMinion> GetAdjacentMinions(IMinion minion)
+        {
+            List<IMinion> adjacent = new List<IMinion>();
+            int index = PlayedMinions.IndexOf(minion);
+            int right = index - 1;
+            int left = index + 1;
+
+            if (right >= 0)
+            {
+                adjacent.Add(PlayedMinions[right]);
+            }
+            if (left < PlayedMinions.Count)
+            {
+                adjacent.Add(PlayedMinions[left]);
+            }
+
+            return adjacent;
+        }
+
+        private void Initialize()
+        {
+            PlayedMinions = new ObservableCollection<IMinion>();
+            PlayedMinions.CollectionChanged += PlayedMinions_CollectionChanged;
+        }
+
+        private void PlayedMinions_CollectionChanged(object sender = null, System.Collections.Specialized.NotifyCollectionChangedEventArgs e = null)
+        {
+            foreach (var minion in PlayedMinions)
+            {
+                minion.OnBoardChanged(new TriggerParams() { Activator = minion, Board = this, Player = Player });
+                minion.OnBattlefieldChanged(new TriggerParams() { Activator = minion, Board = this, Player = Player, RivalBoard = RivalBoard });
+            }
+        }
+
+        private void OnMinionAttacked(IMinion attacker)
+        {
+            foreach (var minion in PlayedMinions)
+            {
+                minion.OnMinionAttacked(new TriggerParams() { Activator = minion, Board = this, Target = attacker });
+            }
+        }
+
+        private void OnMinionDied(IMinion deadMinion)
+        {
+            for (int i = 0; i < PlayedMinions.Count; i++)
+            {
+                PlayedMinions[i].OnMinionDied(new TriggerParams() { Activator = PlayedMinions[i], Target = deadMinion, Board = this, RivalBoard = RivalBoard });
+            }
+
+            RivalBoard.ClearDeaths();
+        }
+
+        private void OnMinionLostDivineShield(IMinion lostDivine)
+        {
+            foreach (var minion in PlayedMinions)
+            {
+                minion.OnMinionLostDivineShield(new TriggerParams() { Activator = minion, Board = this, Target = lostDivine });
+            }
+        }
+
+        private void OnMinionSummon(IMinion summoned, int index)
+        {
+            foreach (IMinion minion in PlayedMinions)
+            {
+                minion.OnMinionSummon(new TriggerParams() { Activator = minion, Index = index, Summon = summoned, Board = this, Player = Player });
+            }
+        }
+
+        private void OnMinionTookDamage(IMinion tookDamage)
+        {
+            foreach (var minion in PlayedMinions.Where(m => m != tookDamage))
+            {
+                minion.OnMinionDamaged(new TriggerParams() { Activator = minion, Board = this, Target = tookDamage });
+            }
+        }
+
+        public void AddAura(IMinion activator, AuraType aura)
+        {
+            BoardAuras.Add(activator, aura);
+        }
+
+        public IMinion GetMinionWithMinAttack()
+        {
+            List<IMinion> targets = PlayedMinions.GroupBy(m => m.Attack).OrderBy(g => g.Key).FirstOrDefault()?.Select(m => m).ToList();
+            if(targets != null)
+                return targets[RandomNumber(0, targets.Count)];
+
+            return null;
+        }
+    }
+}
