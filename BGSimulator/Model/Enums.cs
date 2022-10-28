@@ -31,4 +31,46 @@ namespace BGSimulator.Model
     {
         None = 0,
         Targeted = 1,
-   
+        PlayerImmunity = 2,
+        BattleCry = 4,
+        Magnetic = 8,
+        DeathRattle = 16,
+        SpecialAttack = 32,
+    }
+
+    [Flags]
+    public enum Adapt
+    {
+        OneOne = 1,
+        ThreeHealth = 2,
+        ThreeAttack = 4,
+        DivineShield = 8,
+        Taunt = 16,
+        Poison = 32,
+        DeathRattle = 64,
+        Windfury = 128,
+    }
+
+    public enum Rarity
+    {
+        Classic,
+        Common,
+        Rare,
+        Epic,
+        Legendary
+    }
+
+    public enum Direction
+    {
+        Left = -1,
+        InPlace = 0,
+        Right = 1
+    }
+
+    public enum AuraType
+    {
+        BattleCry,
+        Summon,
+        Deathrattle
+    }
+}
