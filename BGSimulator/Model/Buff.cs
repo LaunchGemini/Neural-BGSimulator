@@ -2,4 +2,8 @@
 {
     public class Buff
     {
-        public
+        public int Attack { get; set; }
+        public int Health { get; set; }
+        public Attribute Attribute { get; set; }
+    }
+}
