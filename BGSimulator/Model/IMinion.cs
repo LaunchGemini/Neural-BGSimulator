@@ -16,4 +16,17 @@ namespace BGSimulator.Model
         MinionType MinionType { get; set; }
         int NumberOfCopies { get; set; }
         Action<TriggerParams> OnAttack { get; set; }
-        Action<TriggerParams> OnBattlefieldChanged { get; set; 
+        Action<TriggerParams> OnBattlefieldChanged { get; set; }
+        Action<TriggerParams> OnBoardChanged { get; set; }
+        Action<TriggerParams> OnDamage { get; set; }
+        Action<TriggerParams> OnDeath { get; set; }
+        Action<TriggerParams> OnMinionAttacked { get; set; }
+        Action<TriggerParams> OnMinionDamaged { get; set; }
+        Action<TriggerParams> OnMinionDied { get; set; }
+        Action<TriggerParams> OnMinionLostDivineShield { get; set; }
+        Action<TriggerParams> OnMinionSummon { get; set; }
+        Action<TriggerParams> OnApplyAura { get; set; }
+        Action<TriggerParams> OnTurnEnd { get; set; }
+        Action<TriggerParams> OnTurnStart { get; set; }
+        Action<TriggerParams> OnPlayerDamage { get; set; }
+        Func<TriggerParams, IMinion> OnAquireTargets { ge
