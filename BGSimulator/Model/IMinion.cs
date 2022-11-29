@@ -29,4 +29,15 @@ namespace BGSimulator.Model
         Action<TriggerParams> OnTurnEnd { get; set; }
         Action<TriggerParams> OnTurnStart { get; set; }
         Action<TriggerParams> OnPlayerDamage { get; set; }
-        Func<TriggerParams, IMinion> OnAquireTargets { ge
+        Func<TriggerParams, IMinion> OnAquireTargets { get; set; }
+        Dictionary<IMinion, Buff> TempBuffs { get; set; }
+        IMinion Contained { get; set; }
+        bool PoolMinion { get; set; }
+        Keywords Keywords { get; set; }
+        MinionType ValidTargets { get; set; }
+        IMinion Clone(bool keepBuffs = false);
+        (bool tookDamage, bool lostDivine, bool overkill, bool killed) TakeDamage(int damage);
+        void AddAura(IMinion buffer, Buff buff);
+        void RemoveAura(IMinion minion);
+    }
+}
