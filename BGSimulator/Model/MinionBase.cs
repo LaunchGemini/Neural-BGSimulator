@@ -55,4 +55,12 @@ namespace BGSimulator.Model
         public Action<TriggerParams> OnApplyAura { get; set; } = delegate { };
         public Action<TriggerParams> OnMinionSummon { get; set; } = delegate { };
         public Action<TriggerParams> OnAttack { get; set; } = delegate { };
-        public Action<Tri
+        public Action<TriggerParams> OnMinionAttacked { get; set; } = delegate { };
+        public Action<TriggerParams> OnMinionDied { get; set; } = delegate { };
+        public Action<TriggerParams> OnDamage { get; set; } = delegate { };
+        public Action<TriggerParams> OnMinionDamaged { get; set; } = delegate { };
+        public Action<TriggerParams> OnMinionLostDivineShield { get; set; } = delegate { };
+        public Action<TriggerParams> OnBoardChanged { get; set; } = delegate { };
+        public Action<TriggerParams> OnPlayerDamage { get; set; } = delegate { };
+        public Dictionary<IMinion, Buff> TempBuffs { get; set; }
+        public Action<TriggerParams> OnBattlefieldChanged { get; set
