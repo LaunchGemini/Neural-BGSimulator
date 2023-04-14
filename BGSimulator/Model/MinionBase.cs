@@ -41,4 +41,18 @@ namespace BGSimulator.Model
             {
                 int currAttack = Attack;
                 foreach (var buff in TempBuffs.Values)
-    
+                {
+                    currAttack += buff.Attack;
+                }
+                return currAttack;
+            }
+        }
+
+        public bool PoolMinion { get; set; } = true;
+        public Action<TriggerParams> OnDeath { get; set; } = delegate { };
+        public Action<TriggerParams> OnTurnStart { get; set; } = delegate { };
+        public Action<TriggerParams> OnTurnEnd { get; set; } = delegate { };
+        public Action<TriggerParams> OnApplyAura { get; set; } = delegate { };
+        public Action<TriggerParams> OnMinionSummon { get; set; } = delegate { };
+        public Action<TriggerParams> OnAttack { get; set; } = delegate { };
+        public Action<Tri
