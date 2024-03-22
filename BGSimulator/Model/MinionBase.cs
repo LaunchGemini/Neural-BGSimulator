@@ -63,4 +63,22 @@ namespace BGSimulator.Model
         public Action<TriggerParams> OnBoardChanged { get; set; } = delegate { };
         public Action<TriggerParams> OnPlayerDamage { get; set; } = delegate { };
         public Dictionary<IMinion, Buff> TempBuffs { get; set; }
-        public Action<TriggerParams> OnBattlefieldChanged { get; set
+        public Action<TriggerParams> OnBattlefieldChanged { get; set; } = delegate { };
+        public Func<TriggerParams, IMinion> OnAquireTargets { get; set; } = delegate { return null; };
+        public bool IsDead { get { return CurrentHealth <= 0; } }
+
+        public IMinion Contained { get; set; }
+
+        public IMinion Clone(bool keepBuffs = false)
+        {
+            var clone = this.MemberwiseClone() as IMinion;
+            if (!keepBuffs)
+            {
+                clone.TempBuffs = new Dictionary<IMinion, Buff>();
+            }
+            return clone;
+        }
+
+        public (bool tookDamage, bool lostDivine, bool overkill, bool killed) TakeDamage(int damage)
+        {
+            if (damage == 0)
