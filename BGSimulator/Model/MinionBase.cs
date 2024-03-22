@@ -109,4 +109,14 @@ namespace BGSimulator.Model
             }
         }
 
-      
+        public override string ToString()
+        {
+            return string.Format("[{0}][{1}][{2}]", Name, CurrentAttack, CurrentHealth);
+        }
+
+        public void AddAura(IMinion buffer, Buff buff)
+        {
+            TempBuffs[buffer] = buff;
+        }
+    }
+}
