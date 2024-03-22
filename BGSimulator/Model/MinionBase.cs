@@ -82,3 +82,31 @@ namespace BGSimulator.Model
         public (bool tookDamage, bool lostDivine, bool overkill, bool killed) TakeDamage(int damage)
         {
             if (damage == 0)
+            {
+                return (false, false, false, false);
+            }
+
+            if ((Attributes & Attribute.DivineShield) != 0)
+            {
+                Attributes &= ~Attribute.DivineShield;
+                return (false, true, false, false);
+            }
+
+            damageTaken += damage;
+
+            return (true, false, CurrentHealth < 0, CurrentHealth <= 0);
+        }
+
+        public void RemoveAura(IMinion minion)
+        {
+            Buff buff;
+            if (TempBuffs.TryGetValue(minion, out buff))
+            {
+                damageTaken -= buff.Health;
+                if (damageTaken < 0)
+                    damageTaken = 0;
+                TempBuffs.Remove(minion);
+            }
+        }
+
+      
