@@ -54,4 +54,26 @@ namespace BGSimulator.Model
 
         public void ChooseDiscover(List<IMinion> minions)
         {
-            if (Hand.Count == MAX_HAND_SIZE
+            if (Hand.Count == MAX_HAND_SIZE)
+            {
+                Pool.Instance.Return(minions);
+                return;
+            }
+
+            var minion = ChooseRandomMinion(minions);
+            minions.Remove(minion);
+            Pool.Instance.Return(minions);
+            Hand.Add(minion);
+        }
+
+        public void PlayRound()
+        {
+            RoundStart();
+            Board.RoundStart();
+            bool done = false;
+
+            while (!done)
+            {
+                bool canBuy = Gold > 2 && Hand.Count < MAX_HAND_SIZE;
+                bool canLevel = ShopLevel < MAX_SHOP_LEVEL && Gold >= ShopLevelupPrice;
+                bool canBuyAndLevel = canBuy && ShopLevel < MAX_SHOP_LEVEL && Gold > ShopLevelupPrice +
