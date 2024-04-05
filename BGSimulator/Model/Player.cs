@@ -31,4 +31,27 @@ namespace BGSimulator.Model
         public Player LastMatch { get; set; }
         public List<string> MinionsPlayedThisGame { get; private set; } = new List<string>();
         public int MissingHealth { get { return PLAYER_MAX_HEALTH - Health; } }
-        publi
+        public string Name { get; set; }
+        public int ShopLevel { get; set; } = 1;
+        public int ShopLevelupPrice { get; set; }
+        public List<IMinion> ShopOffer { get; set; } = new List<IMinion>();
+        public int Top { get; set; }
+        public bool Freeze { get; set; }
+
+        public void AddToHand(ICard minion)
+        {
+            if (Hand.Count == MAX_HAND_SIZE)
+                return;
+
+            Hand.Add(minion);
+        }
+
+        public Adapt ChooseAdapt()
+        {
+            var adaptOptions = GetAdaptOptions();
+            return adaptOptions.First();
+        }
+
+        public void ChooseDiscover(List<IMinion> minions)
+        {
+            if (Hand.Count == MAX_HAND_SIZE
