@@ -129,4 +129,28 @@ namespace BGSimulator.Model
 
             TryFreeze();
 
-     
+            Board.RoundEnd();
+        }
+
+        private void RoundStart()
+        {
+            foreach (var minion in Hand.Where(h => h is IMinion).Cast<IMinion>())
+            {
+                minion.OnTurnStart(new TriggerParams() { Activator = minion, Player = this });
+            }
+        }
+
+        private void TryFreeze()
+        {
+            if (!ShopOffer.Any())
+                return;
+
+            Freeze = RandomNumber(1, 6) == 5;
+
+            if (!Freeze)
+            {
+                BobsTavern.Mulligen(this);
+            }
+            else
+            {
+                Console.WriteLine(string.Format(@"Round {1}: {0} Froze the tavern", Name, Simulatio
