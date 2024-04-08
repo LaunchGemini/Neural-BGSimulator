@@ -93,4 +93,40 @@ namespace BGSimulator.Model
 
                 if (canBuyAndLevel)
                 {
-                    LevelUp()
+                    LevelUp();
+                    continue;
+                }
+
+                if(canRoll && shopOfferEmpty)
+                {
+                    Roll();
+                    continue;
+                }
+
+                if (canBuy)
+                {
+                    Buy();
+                    continue;
+                }
+
+                if (canRoll)
+                {
+                    Roll();
+                    continue;
+                }
+
+                if (canPlay)
+                {
+                    if(tableFull)
+                        Sell();
+                    PlayHand();
+                    continue;
+                }
+
+
+                done = !canBuy && !canLevel;
+            }
+
+            TryFreeze();
+
+     
