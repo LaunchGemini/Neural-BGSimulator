@@ -76,4 +76,21 @@ namespace BGSimulator.Model
             {
                 bool canBuy = Gold > 2 && Hand.Count < MAX_HAND_SIZE;
                 bool canLevel = ShopLevel < MAX_SHOP_LEVEL && Gold >= ShopLevelupPrice;
-                bool canBuyAndLevel = canBuy && ShopLevel < MAX_SHOP_LEVEL && Gold > ShopLevelupPrice +
+                bool canBuyAndLevel = canBuy && ShopLevel < MAX_SHOP_LEVEL && Gold > ShopLevelupPrice + 2;
+                bool canRoll = Gold > 0;
+                bool tableFull = Board.IsFull;
+                bool shopHasDouble = ShopOffer.GroupBy(m => m.Name).Any(g => g.Count() > 1);
+                bool canMakeTriple = Hand.Concat(Board.PlayedMinions).Concat(ShopOffer).GroupBy(m => m.Name).Any(g => g.Count() > 2);
+                bool canSell = Hand.Any() || Board.PlayedMinions.Any();
+                bool canPlay = Hand.Any();
+                bool shopOfferEmpty = !ShopOffer.Any();
+
+                if (Simulation.Instance.Round == 2)
+                {
+                    LevelUp();
+                    break;
+                }
+
+                if (canBuyAndLevel)
+                {
+                    LevelUp()
