@@ -153,4 +153,33 @@ namespace BGSimulator.Model
             }
             else
             {
-                Console.WriteLine(string.Format(@"Round {1}: {0} Froze the tavern", Name, Simulatio
+                Console.WriteLine(string.Format(@"Round {1}: {0} Froze the tavern", Name, Simulation.Instance.Round));
+            }
+        }
+
+        public void TakeDamage(int damage, bool always = false)
+        {
+            if (damage ==0 || (!always && Board.PlayedMinions.Any(m => m.Keywords.HasFlag(Keywords.PlayerImmunity))))
+                return;
+
+            Health -= damage;
+
+            Board.PlayerTookDamage();
+
+            if (Health <= 0)
+            {
+                OnDeath(this);
+            }
+
+        }
+
+        private void Buy()
+        {
+            if (Gold < 3 || Hand.Count == MAX_HAND_SIZE || !ShopOffer.Any())
+                return;
+
+            Gold -= 3;
+            var minion = ShopOffer.OrderByDescending(m => m.Health + m.Attack).FirstOrDefault();
+
+            Hand.Add(minion);
+          
