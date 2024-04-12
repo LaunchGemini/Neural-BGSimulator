@@ -182,4 +182,23 @@ namespace BGSimulator.Model
             var minion = ShopOffer.OrderByDescending(m => m.Health + m.Attack).FirstOrDefault();
 
             Hand.Add(minion);
-          
+            ShopOffer.Remove(minion);
+
+            CheckForTripple();
+
+            Console.WriteLine(string.Format(@"Round {2}: {0} has bought a minion {1}", Name, minion.Name, Simulation.Instance.Round));
+
+        }
+
+        private void CheckForTripple()
+        {
+            var tripple = Hand.Where(h => h is IMinion).Cast<IMinion>().Concat(Board.PlayedMinions).Where(m => m.Level == 1).GroupBy(m => m.Name).FirstOrDefault(g => g.Count() == 3)?.Select(m => m);
+
+            if (tripple != null)
+            {
+                foreach (var minion in tripple)
+                {
+                    if (Hand.Contains(minion))
+                        Hand.Remove(minion);
+                    if (Board.PlayedMinions.Contains(minion))
+      
