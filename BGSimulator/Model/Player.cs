@@ -224,4 +224,26 @@ namespace BGSimulator.Model
 
         private IEnumerable<Adapt> GetAdaptOptions()
         {
-            var adap
+            var adapts = Enum.GetValues(typeof(Adapt)).Cast<Adapt>().ToList();
+            adapts.Shuffle();
+            return adapts.Take(3);
+        }
+
+        private void LevelUp()
+        {
+            if (ShopLevel == MAX_SHOP_LEVEL)
+                return;
+
+            if (Gold >= ShopLevelupPrice)
+            {
+                ShopLevel++;
+                Gold -= ShopLevelupPrice;
+                ShopLevelupPrice = ShopLevel + 5;
+
+                Console.WriteLine(string.Format(@"Round {2}: {0} has leveled up to level {1}", Name, ShopLevel, Simulation.Instance.Round));
+            }
+        }
+
+        private bool Play(IMinion minion, int index = 0, IMinion target = null)
+        {
+            if (Board.IsFu
