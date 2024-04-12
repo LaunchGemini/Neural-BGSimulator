@@ -201,4 +201,27 @@ namespace BGSimulator.Model
                     if (Hand.Contains(minion))
                         Hand.Remove(minion);
                     if (Board.PlayedMinions.Contains(minion))
-      
+                        Board.Remove(minion);
+                }
+
+                var golden = BobsTavern.CreateGolden(this, tripple);
+
+                AddToHand(golden);
+
+                Console.WriteLine(string.Format(@"Round {2}: {0} created a tripple of minion {1}", Name, tripple.First()?.Name, Simulation.Instance.Round));
+            }
+        }
+
+        private IMinion ChooseRandomMinion(List<IMinion> minions)
+        {
+            return minions[RandomNumber(0, minions.Count)];
+        }
+
+        private IMinion ChooseRandomTarget(List<IMinion> targets)
+        {
+            return targets[RandomNumber(0, targets.Count)];
+        }
+
+        private IEnumerable<Adapt> GetAdaptOptions()
+        {
+            var adap
