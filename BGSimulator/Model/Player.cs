@@ -246,4 +246,29 @@ namespace BGSimulator.Model
 
         private bool Play(IMinion minion, int index = 0, IMinion target = null)
         {
-            if (Board.IsFu
+            if (Board.IsFull)
+                return false;
+
+            MinionsPlayedThisGame.Add(minion.Name);
+            Board.Play(minion, index, target);
+            Console.WriteLine(string.Format(@"Round {2}: {0} played {1}", Name, minion.Name, Simulation.Instance.Round));
+
+            return true;
+        }
+
+        private void PlayCard(ICard card)
+        {
+            Hand.Remove(card);
+
+            card.OnPlayed(new TriggerParams() { Player = this });
+        }
+
+        private void PlayHand()
+        {
+            for (int i = 0; i < Hand.Count; i++)
+            {
+                if (Hand[i] is IMinion)
+                {
+                    PlayMinion(Hand[i] as IMinion);
+                }
+   
