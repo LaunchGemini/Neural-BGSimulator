@@ -271,4 +271,32 @@ namespace BGSimulator.Model
                 {
                     PlayMinion(Hand[i] as IMinion);
                 }
-   
+                else
+                {
+                    PlayCard(Hand[i]);
+                }
+            }
+        }
+
+        private void PlayMinion(IMinion minion)
+        {
+            IMinion target = null;
+            IMinion playMinion = minion;
+
+            if(minion.Contained != null)
+            {
+                playMinion = minion.Contained;
+            }
+
+
+            if (playMinion.Keywords.HasFlag(Keywords.Targeted))
+            {
+                var targets = Board.GetValidTargets(minion.ValidTargets);
+                if (targets.Any())
+                {
+                    target = ChooseRandomTarget(targets);
+                }
+            }
+
+            if (Play(playMinion, target: target))
+  
