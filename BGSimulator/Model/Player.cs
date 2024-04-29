@@ -299,4 +299,29 @@ namespace BGSimulator.Model
             }
 
             if (Play(playMinion, target: target))
-  
+            {
+                minion.Contained = null;
+                Hand.Remove(minion);
+            }
+        }
+
+        private void Roll()
+        {
+            if (Gold > 0)
+            {
+                BobsTavern.Mulligen(this);
+                BobsTavern.Roll(this);
+
+                Console.WriteLine(string.Format(@"Round {1}: {0} rolled", Name, Simulation.Instance.Round));
+            }
+        }
+
+        private void Sell()
+        {
+            if (Board.IsEmpty)
+                return;
+
+            var minion = Board.RemoveSmallestMinion();
+            BobsTavern.Sell(minion);
+
+            Console.WriteLine(string.Format(@"Round {2}: {0} has sold a minion {1}", Name, minion
