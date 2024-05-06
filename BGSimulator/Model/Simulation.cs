@@ -165,3 +165,18 @@ namespace BGSimulator.Model
                     }
                 }
             } while (!matched);
+
+            return matchedPlayers;
+        }
+
+        private int GetGoldPerRound()
+        {
+            return Round + 2 < MAX_GOLD ? Round + 2 : MAX_GOLD;
+        }
+
+        private bool GameOver()
+        {
+            return players.Where(p => !p.IsDead).Count() <= 1;
+        }
+    }
+}
