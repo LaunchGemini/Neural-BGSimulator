@@ -24,3 +24,7 @@ namespace BGSimulator.Properties
             get
             {
                 return defaultInstance;
+            }
+        }
+    }
+}
